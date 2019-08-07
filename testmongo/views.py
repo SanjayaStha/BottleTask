@@ -18,7 +18,7 @@ class ClassifiedView(viewsets.ModelViewSet):
 # """ Date field is updated in DB, from 01/18/2019 format to 2019-01-18 standard format of django"""
 
     def get_queryset(self):
-        print(len(Cars.objects.values('car_type')))
+        # print(len(Cars.objects.values('car_type')))
         start = Cars.objects.earliest('date').date # finding the earliest date in date column
         end = Cars.objects.latest('date').date # finding the latest date in date column
 
