@@ -30,5 +30,5 @@ class ClassifiedSerializer(serializers.ModelSerializer):
 class NameSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Name
-        fields = '__all__'
+        model = Cars
+        fields = ('car_type',)

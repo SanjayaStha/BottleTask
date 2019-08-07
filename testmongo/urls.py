@@ -6,7 +6,7 @@ routers = routers.DefaultRouter()
 
 routers.register(r'detail', CarsDetailView),
 routers.register(r'classified', ClassifiedView, base_name='classified'),
-routers.register(r'name', NameView)
+routers.register(r'name', NameView, base_name='name')
 
 urlpatterns = routers.urls
 

@@ -1,3 +1,4 @@
+from django.db.models import Count
 from rest_framework import viewsets
 from .models import Cars, Name
 from .serializers import CarsSerializer, NameSerializer, ClassifiedSerializer
@@ -14,21 +15,31 @@ class ClassifiedView(viewsets.ModelViewSet):
     serializer_class = ClassifiedSerializer
     name = 'classified'
 
-    def get_queryset(self):
+# """ Date field is updated in DB, from 01/18/2019 format to 2019-01-18 standard format of django"""
 
-        start = Cars.objects.earliest('date').date
-        end = Cars.objects.latest('date').date
+    def get_queryset(self):
+        print(len(Cars.objects.values('car_type')))
+        start = Cars.objects.earliest('date').date # finding the earliest date in date column
+        end = Cars.objects.latest('date').date # finding the latest date in date column
 
         datalist = []
 
         end_date = start
-        while start < end:
-            datadict = {}
-            end_date = start + datetime.timedelta(days=10)
-            print(start, 'start')
-            print(end_date, 'end_date')
-            data = Cars.objects.filter(date__range=[start, end_date])
-            count = data.count()
+        while start < end: # looping from earliest date to latest date
+            datadict = {}   # dict to store the data
+            end_date = start + datetime.timedelta(days=10) # updating end date to classify within intervals,
+
+            data = Cars.objects.filter(date__range=[start, end_date]) # fetching data in the range of 10 days
+            count = len(data.values('car_type').distinct()) # counting no of cars
+
+            # distinct = data.values(
+            #     'car_type'
+            # ).annotate(
+            #     car_count=Count('car_type')
+            # ).filter(car_count=1)
+            # records = data.filter(car_type__in=[item['car_type'] for item in distinct])
+            # print(records.count())
+            # count = records.count()
             emails = data.values('email')
             em = []
             for email in emails:
@@ -51,8 +62,8 @@ class ClassifiedView(viewsets.ModelViewSet):
 
 
 class NameView(viewsets.ModelViewSet):
-    # queryset = Name.objects.all()
-    # serializer_class = NameSerializer
-    # name = 'name'
-    pass
+    queryset = Cars.objects.values('car_type')
+    serializer_class = NameSerializer
+    name = 'name'
+
 
